@@ -3,9 +3,10 @@ import React, { useRef, useEffect, useState } from 'react';
 interface BottomNavProps {
   currentPage: number;
   onNavigate: (page: number) => void;
+  isOpened: boolean;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate, isOpened }) => {
   const navItems = [
     { label: 'Opening', icon: '🏠' },
     { label: 'Quotes', icon: '💬' },
@@ -47,7 +48,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate })
   }, [currentPage, itemWidth]);
 
   return (
-    <div className="w-full h-full">
+    <div className={`w-full h-full transition-opacity duration-300 ${isOpened ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       <div className="relative h-full bg-white border-t border-gray-200">
         <div
           ref={containerRef}

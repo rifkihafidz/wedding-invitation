@@ -24,6 +24,7 @@ function App() {
   const [visiblePage, setVisiblePage] = useState(0) // the page currently rendered
   const [isAnimating, setIsAnimating] = useState(false)
   const [scale, setScale] = useState(1)
+  const [isOpened, setIsOpened] = useState(false) // Track if invitation opened
   // actual CSS width used to render the canvas; increase slightly on mobile for better visuals
   const [renderWidth, setRenderWidth] = useState(CANVAS_WIDTH)
   const [hideSideBg, setHideSideBg] = useState(false)
@@ -100,6 +101,11 @@ function App() {
 
   const handleNavigate = (pageIndex: number) => {
     if (isAnimating || pageIndex === visiblePage) return
+
+    // If navigating away from opening page (page 0), mark as opened
+    if (pageIndex !== 0 && !isOpened) {
+      setIsOpened(true)
+    }
 
     // highlight nav immediately
     setCurrentPage(pageIndex)
@@ -186,7 +192,7 @@ function App() {
         transformOrigin: 'center center',
       }}
      >
-      <AudioPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+      <AudioPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} isOpened={isOpened} />
 
       <div className="w-full h-[932px] relative overflow-hidden flex flex-col">
         {/* Content area (fills available canvas height) */}
@@ -206,7 +212,7 @@ function App() {
         </div>
 
         {/* Bottom navigation stays fixed inside the canvas and centered to original canvas width */}
-        <div className="w-full h-[80px]"> <BottomNav currentPage={currentPage} onNavigate={handleNavigate} /> </div>
+        <div className="w-full h-[80px]"> <BottomNav currentPage={currentPage} onNavigate={handleNavigate} isOpened={isOpened} /> </div>
       </div>
     </div>
     </div>
