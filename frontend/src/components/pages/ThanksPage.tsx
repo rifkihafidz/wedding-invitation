@@ -11,10 +11,6 @@ export const ThanksPage = () => {
             <p className="text-sm text-rose-500">Selpia & Ernest</p>
             <p className="text-xs text-rose-400 mt-1">bersama keluarga besar</p>
           </div>
-
-          <div className="mt-6">
-            <button onClick={() => window.history.back()} className="px-4 py-2 rounded-full bg-rose-50 text-rose-700 text-sm">Kembali</button>
-          </div>
         </div>
       </div>
 
