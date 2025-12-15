@@ -1,22 +1,27 @@
 export const ThanksPage = () => {
   return (
-    <div className="w-full h-[852px] bg-gradient-to-br from-rose-50 via-pink-50 to-red-50 flex items-center justify-center relative overflow-hidden py-8 animate-fade-in">
-      <div className="w-full max-w-[360px] mx-auto px-4">
-        <div className="bg-white/95 rounded-3xl shadow-xl p-6 text-center">
-          <div className="text-4xl mb-2">💝</div>
-          <h2 className="text-xl font-serif text-rose-900 font-medium">Terima Kasih</h2>
-          <p className="text-sm text-rose-700 mt-3">Terima kasih atas doa dan kehadiran Anda. Semoga kebahagiaan menyertai kita semua.</p>
+    <div className="w-full h-[852px] bg-gradient-to-br from-rose-50 via-pink-50 to-red-50 flex items-center justify-center relative overflow-hidden p-6">
+      <div className="w-full max-w-sm text-center z-10">
+        <div className="mb-10">
+          <p className="text-5xl mb-6">💝</p>
+          <h2 className="text-2xl font-serif text-rose-900 font-light mb-4">
+            Terima Kasih
+          </h2>
+          <p className="text-sm text-rose-700 font-light leading-relaxed">
+            Terima kasih atas doa, restu, dan kehadiran Anda. 
+            Semoga kebahagiaan dan berkah menyertai kita semua.
+          </p>
+        </div>
 
-          <div className="mt-6">
-            <p className="text-sm text-rose-500">Selpia & Ernest</p>
-            <p className="text-xs text-rose-400 mt-1">bersama keluarga besar</p>
-          </div>
+        <div className="pt-8 border-t border-rose-200">
+          <p className="text-lg font-serif text-rose-900 font-light">
+            Selpia & Ernest
+          </p>
+          <p className="text-xs text-rose-600 font-light mt-2">
+            Bersama keluarga besar
+          </p>
         </div>
       </div>
-
-      {/* decorative corners */}
-      <div className="absolute top-6 left-6 text-3xl opacity-10">🌿</div>
-      <div className="absolute bottom-6 right-6 text-3xl opacity-10">💐</div>
     </div>
   )
 }
