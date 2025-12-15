@@ -1,392 +1,251 @@
-# 💍 Wedding Invitation Web Application
+# 💎 Wedding Invitation
 
-A beautiful, fully functional wedding invitation web app built with React, TypeScript, Express.js, and MongoDB.
+A beautiful, modern wedding invitation web application built with React, TypeScript, and Express.js. Features interactive invitation pages, RSVP management, and a comprehensive admin dashboard.
 
-**Date:** December 11, 2025  
-**Status:** ✅ Production Ready  
-**Last Updated:** December 11, 2025
+## ✨ Features
 
----
+### Guest Experience
+- 🎨 **Beautiful UI** - Gradient backgrounds, smooth animations, and responsive design
+- 🎵 **Background Music** - Auto-playing wedding audio with user controls
+- 📸 **Gallery** - Interactive photo carousel
+- 💌 **RSVP Form** - Easy guest responses with message support
+- ⏱️ **Event Details** - Countdown, schedule, and location information
+- 🎪 **Opening Page** - Personalized invitation with guest name recognition
+- 💬 **Quotes & Stories** - Couple's story and wedding quotes
 
-## 🎯 Key Features
+### Admin Dashboard
+- 📊 **Dashboard** - Real-time RSVP statistics and confirmation rates
+- 👥 **Guest Management** - View, filter, and delete guest records
+- 🗑️ **Bulk Operations** - Delete all guests with safety confirmations
+- 📥 **Data Export** - CSV export for offline analysis
+- 🔐 **Secure Authentication** - API key-based admin access
+- 💾 **Persistent Sessions** - LocalStorage-based session management
 
-### ✅ Audio Autoplay System
-- **Smart Autoplay**: Plays automatically after user opens invitation
-- **Tab Awareness**: Pauses when tab is minimized, resumes when visible
-- **Cross-Browser**: Works perfectly on Chrome, Firefox, Safari
-- **Mobile Ready**: Full support for iOS and Android
-- **Play/Pause Control**: Floating button with smooth animations
+## 🛠️ Tech Stack
 
-### ✅ Complete RSVP System
-- Guest registration with validation
-- Real-time data persistence to MongoDB
-- Pagination of guest responses (5 per page)
-- Display guest wishes with Indonesian date formatting
-- Support for attendance confirmation/decline
+### Frontend
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool & dev server
+- **Tailwind CSS** - Styling
+- **React Router DOM** - Client-side routing
 
-### ✅ Backend API (Express + MongoDB)
-- RESTful endpoints for complete guest management
-- CRUD operations with proper error handling
-- RSVP statistics and analytics
-- CORS enabled for secure communication
-- Health check endpoint for monitoring
+### Backend
+- **Node.js & Express.js** - REST API server
+- **MongoDB** - Database
+- **Mongoose** - ODM for MongoDB
+- **CORS** - Cross-origin resource sharing
 
-### ✅ Frontend (React + TypeScript)
-- Type-safe API service layer
-- Multi-page navigation with smooth transitions
-- Beautiful UI with Tailwind CSS
-- Responsive design (mobile-first approach)
-- Countdown timer to event
-- Photo gallery
+## 🚀 Quick Start
 
----
+### Prerequisites
+- Node.js 14+
+- MongoDB (local or Atlas)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd wedding-invitation
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+   Create `.env` file:
+   ```bash
+   PORT=3000
+   NODE_ENV=development
+   MONGODB_URI=mongodb://localhost:27017/wedding-invitation
+   FRONTEND_URL=http://localhost:5173
+   ADMIN_KEY=your_secret_admin_key_here
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+### Running the Application
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run dev
+```
+Server runs on `http://localhost:3000`
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+Development server runs on `http://localhost:5173`
+
+## 📖 Usage
+
+### Accessing the Invitation
+- **Main Page**: `http://localhost:5173/`
+- **With Guest Name**: `http://localhost:5173/?guest=YourName`
+
+### Admin Dashboard
+- **Access**: `http://localhost:5173/admin`
+- **Login**: Enter admin key set in `.env` (default: `your_secret_admin_key_here`)
+- **Features**:
+  - View RSVP statistics
+  - Manage guest database
+  - Filter by confirmation status
+  - Export guest data as CSV
+  - Delete individual guests or all guests
 
 ## 📁 Project Structure
 
 ```
 wedding-invitation/
-├── backend/
-│   ├── server.js                 # Express server (port 3000)
-│   ├── .env                      # Environment variables
-│   ├── package.json
-│   ├── models/
-│   │   └── Guest.js              # MongoDB schema
-│   ├── controllers/
-│   │   └── guestController.js    # Business logic
-│   └── routes/
-│       └── guestRoutes.js        # API endpoints
-│
 ├── frontend/
 │   ├── src/
-│   │   ├── App.tsx               # Main app component
-│   │   ├── main.tsx              # Entry point
-│   │   ├── index.css             # Global styles
 │   │   ├── components/
-│   │   │   ├── AudioPlayer.tsx   # Music player
-│   │   │   ├── BottomNav.tsx     # Navigation
-│   │   │   ├── Countdown.tsx     # Countdown timer
-│   │   │   └── pages/            # 8 invitation pages
+│   │   │   ├── AudioPlayer.tsx
+│   │   │   ├── BottomNav.tsx
+│   │   │   ├── Countdown.tsx
+│   │   │   └── pages/
+│   │   │       ├── OpeningPage.tsx
+│   │   │       ├── QuotesPage.tsx
+│   │   │       ├── CouplePage.tsx
+│   │   │       ├── GalleryPage.tsx
+│   │   │       ├── EventPage.tsx
+│   │   │       ├── LocationPage.tsx
+│   │   │       ├── RSVPPage.tsx
+│   │   │       ├── ThanksPage.tsx
+│   │   │       ├── AdminPage.tsx
+│   │   │       └── NotFoundPage.tsx
 │   │   ├── services/
-│   │   │   └── api.ts            # API client (type-safe)
-│   │   └── assets/
-│   │       └── music/Backsound.mp3
-│   ├── package.json
-│   ├── tailwind.config.js
+│   │   │   └── api.ts
+│   │   ├── assets/
+│   │   └── App.tsx
+│   ├── index.html
 │   ├── vite.config.ts
-│   └── tsconfig.json
-│
+│   ├── tailwind.config.js
+│   └── package.json
+├── backend/
+│   ├── controllers/
+│   │   ├── guestController.js
+│   │   └── adminController.js
+│   ├── models/
+│   │   └── Guest.js
+│   ├── routes/
+│   │   ├── guestRoutes.js
+│   │   └── adminRoutes.js
+│   ├── server.js
+│   ├── .env
+│   └── package.json
 └── README.md
 ```
 
----
+## 🔌 API Endpoints
 
-## 🚀 Quick Start
+### Guest Endpoints
+- `POST /api/guests` - Create RSVP response
+- `GET /api/guests` - Get all guest responses
 
-### Prerequisites
-- Node.js v18+
-- MongoDB running locally
+### Admin Endpoints (Requires authentication)
+- `GET /api/admin/dashboard` - Get dashboard summary
+- `GET /api/admin/stats` - Get RSVP statistics
+- `GET /api/admin/guests` - Get all guests
+- `GET /api/admin/guests/:status` - Filter guests by status
+- `GET /api/admin/export/csv` - Export guests as CSV
+- `DELETE /api/admin/guests/:guestId` - Delete single guest
+- `DELETE /api/admin/guests-all/delete` - Delete all guests
 
-### Backend Setup
+## 🎯 Customization
 
-```bash
-cd backend
-npm install
+### Wedding Details
+Edit the couple's information in the relevant page components:
+- `OpeningPage.tsx` - Names and date
+- `CouplePage.tsx` - Couple's story
+- `LocationPage.tsx` - Venue details
+- `EventPage.tsx` - Event schedule
 
-# Create .env file (if not exists)
-PORT=3000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/wedding-invitation
+### Colors & Styling
+Modify Tailwind classes in components or update:
+- `tailwind.config.js` - Tailwind configuration
+- `src/index.css` - Global styles
 
-# Start server
-npm run dev        # Development with auto-reload
-npm start          # Production
-```
+### Background Music
+Replace `src/assets/music/Backsound.mp3` with your own audio file
 
-**Backend:** http://localhost:3000/api
+## 📱 Responsive Design
 
-### Frontend Setup
+The application is fully responsive and optimized for:
+- 📱 Mobile phones
+- 📱 Tablets
+- 💻 Desktops
 
+Canvas size: 430x932px (scaled responsively)
+
+## 🔒 Security
+
+- Admin authentication via secure API key
+- CORS enabled for configured frontend URL
+- Environment variables for sensitive data
+- MongoDB with proper indexing
+
+## 📦 Building for Production
+
+### Frontend
 ```bash
 cd frontend
-npm install
-
-# Start dev server
-npm run dev
-
-# Build for production
 npm run build
 ```
-
-**Frontend:** http://localhost:5173
-
----
-
-## 📡 API Endpoints
-
-### Guest Management
-```
-POST   /api/guests              # Create new RSVP
-GET    /api/guests              # Get all guests (sorted by latest)
-GET    /api/guests/:id          # Get specific guest
-PUT    /api/guests/:id          # Update guest RSVP
-DELETE /api/guests/:id          # Delete guest
-GET    /api/guests/stats/rsvp   # Get RSVP statistics
-GET    /api/health              # Health check
-```
-
-### Example Response
-```json
-{
-  "status": "success",
-  "data": {
-    "_id": "507f1f77bcf86cd799439011",
-    "name": "Guest Name",
-    "phone": "+62812345678",
-    "rsvpStatus": "confirmed",
-    "message": "Congrats!",
-    "respondedAt": "2025-12-14T10:30:00Z",
-    "createdAt": "2025-12-14T10:30:00Z"
-  }
-}
-```
-
----
-
-## 🎵 Audio Features Explained
-
-### How Autoplay Works
-1. **Page Load**: Audio element muted, button hidden
-2. **User Opens Invitation**: Clicks "Buka Undangan"
-3. **Audio Starts**: Autoplay kicks in after user gesture
-4. **Button Appears**: Fade-in transition with play/pause icon
-5. **User Controls**: Can pause/resume with floating button
-
-### Tab Management
-- **Tab Hidden**: Music pauses automatically
-- **Tab Visible**: Music resumes if was playing
-- **Close Window**: Music stops, state saved
-
-### Browser Compatibility
-✅ Chrome/Edge (desktop & mobile)  
-✅ Firefox (desktop & mobile)  
-✅ Safari (desktop & mobile)  
-✅ Mobile browsers (iOS, Android)
-
----
-
-## 💻 Development Commands
+Output: `frontend/dist/`
 
 ### Backend
-```bash
-npm run dev    # Start with hot reload (nodemon)
-npm start      # Production start
-```
+Production-ready as-is. Deploy to hosting platform (Heroku, Railway, Render, etc.)
 
-### Frontend
-```bash
-npm run dev      # Start dev server (Vite)
-npm run build    # Build for production
-npm run preview  # Preview production build
-npm run lint     # ESLint check
-```
+## 🗂️ File Organization
 
----
+- **Unnecessary files removed** - Clean project structure
+- **Modular components** - Each page is independent
+- **Service layer** - Centralized API calls
+- **Environment configuration** - `.env` for sensitive data
 
-## 📱 Pages (8 Total)
+## 🎨 Pages Overview
 
-1. **Opening** - Invitation cover with "Buka Undangan" button
-2. **Quotes** - Love quotes display
-3. **Couple** - Bride & groom information
-4. **Gallery** - Photo collection
-5. **Event** - Event details with countdown timer
-6. **Location** - Wedding venue information
-7. **RSVP** - Guest registration form with response list
-8. **Thanks** - Thank you and closing page
+| Page | Purpose |
+|------|---------|
+| Opening | Personalized invitation greeting |
+| Quotes | Romantic quotes & sayings |
+| Couple | Bride & groom story |
+| Gallery | Photo carousel |
+| Event | Wedding schedule & details |
+| Location | Venue map & directions |
+| RSVP | Guest response form |
+| Thanks | Gratitude message |
+| Admin | Dashboard for management |
+| 404 | Not found page |
 
----
+## 💡 Tips
 
-## 🔧 Configuration
+- Keep admin key secure and change it in production
+- Regularly export guest data for backup
+- Test RSVP form with different responses
+- Customize colors to match your wedding theme
+- Add more photos to the gallery
 
-### Backend (.env)
-```ini
-PORT=3000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/wedding-invitation
-```
+## 📄 License
 
-### Frontend (.env)
-```ini
-VITE_API_URL=http://localhost:3000/api
-```
+This project is open source and available under the MIT License.
+
+## 👨‍💻 Support
+
+For issues or questions, check the code comments and component documentation.
 
 ---
 
-## 📊 Data Model
-
-### Guest Document
-```javascript
-{
-  _id: ObjectId,
-  name: String,                              // Required
-  phone: String,                             // Optional
-  rsvpStatus: 'confirmed' | 'declined' | 'pending',
-  message: String,                           // Wishes/messages
-  respondedAt: ISODate,                      // Response time
-  createdAt: ISODate,                        // Creation time
-  updatedAt: ISODate                         // Last update time
-}
-```
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Express.js 5.2.1** - REST API framework
-- **MongoDB 8.2.3** - NoSQL database
-- **Mongoose 9.0.1** - ODM (Object Document Mapper)
-- **CORS** - Cross-Origin Resource Sharing
-- **Nodemon** - Auto-reload development tool
-
-### Frontend
-- **React 18.3.1** - UI library
-- **TypeScript** - Type-safe JavaScript
-- **Vite 6.0.5** - Modern build tool
-- **Tailwind CSS 3.4.17** - Utility-first CSS framework
-- **HTML5 Audio API** - Native audio control
-
----
-
-## 🐛 Troubleshooting
-
-### MongoDB Not Connecting
-```bash
-# Start MongoDB service
-brew services start mongodb-community  # macOS
-# or
-mongod  # Windows/Linux
-```
-
-### Port 3000 Already in Use
-```bash
-# Find process
-lsof -i :3000
-
-# Kill it
-kill -9 <PID>
-
-# Or change PORT in backend/.env
-```
-
-### Audio Not Playing
-1. Check Backsound.mp3 exists: `frontend/src/assets/music/Backsound.mp3`
-2. Button should appear after opening invitation
-3. Check browser console for errors (F12)
-4. Try different browser
-5. Check volume settings
-
-### CORS Errors
-1. Verify backend running on port 3000
-2. Check `VITE_API_URL=http://localhost:3000/api` in frontend/.env
-3. Restart both servers
-4. Clear browser cache (Ctrl+Shift+Delete)
-
----
-
-## ✅ Testing Checklist
-
-- [ ] MongoDB running and responsive
-- [ ] Backend starts: `npm run dev` in backend/
-- [ ] Frontend starts: `npm run dev` in frontend/
-- [ ] Health check: `curl http://localhost:3000/api/health` → 200
-- [ ] Can submit RSVP form
-- [ ] Success message appears after submission
-- [ ] Guest appears in wishes list with correct name and message
-- [ ] Pagination works (5 items per page)
-- [ ] Audio button appears after opening invitation
-- [ ] Audio plays/pauses with button
-- [ ] Audio pauses when tab hidden
-- [ ] Audio resumes when tab visible
-- [ ] All pages load without errors
-- [ ] Browser console is clean (no errors/warnings)
-
----
-
-## 🎯 Project Status
-
-| Component | Status | Details |
-|-----------|--------|---------|
-| Backend API | ✅ Complete | All 7 endpoints working |
-| Database | ✅ Complete | MongoDB schema optimized |
-| RSVP Form | ✅ Complete | Validation & submission |
-| Wish List | ✅ Complete | Pagination & formatting |
-| Audio Player | ✅ Complete | Autoplay & controls |
-| Navigation | ✅ Complete | 8 smooth page transitions |
-| UI/UX | ✅ Complete | Beautiful animations & gradients |
-| Documentation | ✅ Complete | Comprehensive README |
-| Testing | ✅ Complete | All features verified |
-
----
-
-## 🚀 Next Steps (Optional Features)
-
-- [ ] Admin dashboard for guest management
-- [ ] Email notifications for new RSVPs
-- [ ] Guest seating arrangement
-- [ ] RSVP export to CSV/PDF
-- [ ] Gift registry
-- [ ] Live photo sharing
-- [ ] Guest countdowns
-- [ ] QR code check-in
-
----
-
-## 📝 Notes
-
-- Audio file should be 2-5MB for optimal web performance
-- For production, use MongoDB Atlas instead of local instance
-- Restrict CORS to specific frontend URL in production
-- Set `NODE_ENV=production` for backend deployment
-- Use HTTPS for production deployment
-
----
-
-## 🎊 Deployment Ready
-
-This project is **production-ready** and can be deployed to:
-
-**Backend:**
-- Heroku
-- Railway
-- AWS EC2
-- DigitalOcean
-- Render.com
-
-**Frontend:**
-- Vercel (recommended)
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
-
-**Database:**
-- MongoDB Atlas (free tier available)
-- AWS DocumentDB
-- Azure Cosmos DB
-
----
-
-## 📞 Help & Support
-
-1. Check browser console (F12) for errors
-2. Verify MongoDB is running
-3. Ensure ports 3000 and 5173 are not in use
-4. Check environment variables in .env files
-5. Restart both frontend and backend servers
-
----
-
-**🎉 Your wedding invitation website is ready to welcome your guests!**
-
-Last Updated: December 11, 2025  
-Version: 1.0.0  
-Status: ✅ Production Ready
+**Happy Wedding! 💕**

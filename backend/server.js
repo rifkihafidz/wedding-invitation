@@ -11,6 +11,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/weddin
 
 // Import routes
 const guestRoutes = require('./routes/guestRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Middleware
 // Allow all origins for development
@@ -39,6 +40,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api', guestRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

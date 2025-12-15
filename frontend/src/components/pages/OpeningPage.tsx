@@ -1,10 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface OpeningPageProps {
   onOpen?: () => void
 }
 
 export const OpeningPage: React.FC<OpeningPageProps> = ({ onOpen }) => {
+  const [guestName, setGuestName] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const guest = params.get('guest');
+    if (guest) {
+      const decodedName = decodeURIComponent(guest);
+      setGuestName(decodedName);
+    }
+  }, []);
   return (
     <div className="w-full h-[852px] bg-gradient-pink flex items-center justify-center relative overflow-hidden animate-fade-in">
       {/* Soft decorative elements */}
@@ -31,7 +41,13 @@ export const OpeningPage: React.FC<OpeningPageProps> = ({ onOpen }) => {
           <div className="h-px w-16 bg-gradient-to-l from-transparent to-rose-300" />
         </div>
 
-        <p className="text-sm text-rose-700 mb-5">Sabtu, 14 Februari 2026</p>
+        <p className="text-sm text-rose-700 mb-3">Sabtu, 14 Februari 2026</p>
+
+        {guestName && (
+          <p className="text-sm text-rose-600 mb-4 font-medium">
+            Kepada: <span className="font-semibold">{guestName}</span>
+          </p>
+        )}
 
         <div className="mt-3">
           <button onClick={onOpen} className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-amber-200/90 to-amber-100/70 text-amber-900 text-base shadow-md hover:shadow-lg transition-all-smooth hover:scale-105">Buka Undangan</button>
