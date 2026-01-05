@@ -44,7 +44,9 @@ export const EventPage = () => {
           {/* Ceremony */}
           <div className={`glass-gold rounded-2xl p-5 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xl">💒</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6 text-amber-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+              </svg>
               <p className="text-[10px] text-amber-400 font-light tracking-[0.25em] uppercase">Holy Matrimony</p>
             </div>
             <p className="text-xl font-serif text-amber-50 font-light mb-1">Akad Nikah</p>
@@ -65,7 +67,9 @@ export const EventPage = () => {
           {/* Reception */}
           <div className={`glass-gold rounded-2xl p-5 transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xl">🎊</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6 text-rose-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+              </svg>
               <p className="text-[10px] text-amber-400 font-light tracking-[0.25em] uppercase">Wedding Reception</p>
             </div>
             <p className="text-xl font-serif text-amber-50 font-light mb-1">Resepsi</p>

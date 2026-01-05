@@ -117,7 +117,9 @@ export const RSVPPage = () => {
       {/* Header */}
       <div className={`text-center pt-5 pb-3 px-5 border-b border-amber-400/20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}>
         <div className="flex items-center justify-center gap-2 mb-1">
-          <span className="text-lg">💌</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-amber-400">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
           <h2 className="text-base font-serif text-amber-50 font-light">Konfirmasi Kehadiran</h2>
         </div>
         <p className="text-[10px] text-amber-100/70 font-light">Kami menantikan kehadiran Anda</p>
@@ -165,8 +167,8 @@ export const RSVPPage = () => {
                 type="button"
                 onClick={() => setAttendance('yes')}
                 className={`py-2.5 px-3 rounded-xl text-sm font-light transition-all duration-300 ${attendance === 'yes'
-                    ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400/60'
-                    : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-emerald-400/50'
+                  ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400/60'
+                  : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-emerald-400/50'
                   }`}
               >
                 ✓ Hadir
@@ -175,8 +177,8 @@ export const RSVPPage = () => {
                 type="button"
                 onClick={() => setAttendance('no')}
                 className={`py-2.5 px-3 rounded-xl text-sm font-light transition-all duration-300 ${attendance === 'no'
-                    ? 'bg-rose-500/30 text-rose-300 border-2 border-rose-400/60'
-                    : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-rose-400/50'
+                  ? 'bg-rose-500/30 text-rose-300 border-2 border-rose-400/60'
+                  : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-rose-400/50'
                   }`}
               >
                 ✗ Tidak Bisa
@@ -226,7 +228,7 @@ export const RSVPPage = () => {
                     <div className="flex items-start justify-between mb-1">
                       <p className="text-xs font-medium text-amber-50">{item.name}</p>
                       <span className={`text-[9px] font-light px-2 py-0.5 rounded-full ${item.rsvpStatus === 'confirmed' ? 'bg-emerald-500/25 text-emerald-300' :
-                          item.rsvpStatus === 'declined' ? 'bg-rose-500/25 text-rose-300' : 'bg-amber-500/25 text-amber-300'
+                        item.rsvpStatus === 'declined' ? 'bg-rose-500/25 text-rose-300' : 'bg-amber-500/25 text-amber-300'
                         }`}>
                         {item.rsvpStatus === 'confirmed' ? '✓ Hadir' : item.rsvpStatus === 'declined' ? '✗ Tidak' : 'Pending'}
                       </span>
@@ -266,7 +268,7 @@ export const RSVPPage = () => {
               </>
             ) : (
               <div className="glass-dark-subtle rounded-xl p-4 text-center">
-                <p className="text-xs text-amber-100/60 font-light">Jadilah yang pertama memberikan ucapan! 💝</p>
+                <p className="text-xs text-amber-100/60 font-light">Jadilah yang pertama memberikan ucapan!</p>
               </div>
             )}
           </div>

@@ -45,7 +45,10 @@ export const LocationPage = () => {
         {/* Venue Card */}
         <div className={`glass-gold rounded-2xl p-4 mb-3 text-center transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-lg">📍</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-amber-400">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
             <p className="text-[10px] text-amber-400 font-light tracking-[0.25em] uppercase">Venue</p>
           </div>
           <h3 className="text-base font-serif text-amber-50 font-light mb-2">
