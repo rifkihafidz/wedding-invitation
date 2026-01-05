@@ -12,34 +12,36 @@ export const RSVPPage = () => {
   const [error, setError] = useState('');
   const [wishes, setWishes] = useState<Array<{ name: string; message: string; rsvpStatus: string; respondedAt: string }>>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isVisible, setIsVisible] = useState(false);
   const itemsPerPage = 5;
 
-  // Format date to Indonesian format
+  useEffect(() => {
+    setTimeout(() => setIsVisible(true), 100);
+  }, []);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const day = date.getDate();
-    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
-    return `${hours}.${minutes}, ${day} ${month} ${year}`;
+    return `${hours}:${minutes}, ${day} ${month} ${year}`;
   };
 
-  // Fetch wishes on mount and after submission
   const fetchWishes = async () => {
     try {
       const response = await guestService.getAllGuests();
       if (response.data) {
-        const fetchedWishes = response.data
-          .map(guest => ({
-            name: guest.name,
-            message: guest.message && guest.message.trim() ? guest.message : '-',
-            rsvpStatus: guest.rsvpStatus || 'pending',
-            respondedAt: guest.respondedAt || new Date().toISOString(),
-          }));
+        const fetchedWishes = response.data.map(guest => ({
+          name: guest.name,
+          message: guest.message && guest.message.trim() ? guest.message : '-',
+          rsvpStatus: guest.rsvpStatus || 'pending',
+          respondedAt: guest.respondedAt || new Date().toISOString(),
+        }));
         setWishes(fetchedWishes);
-        setCurrentPage(1); // Reset to first page when fetching new data
+        setCurrentPage(1);
       }
     } catch (err) {
       console.error('Failed to fetch wishes:', err);
@@ -47,7 +49,6 @@ export const RSVPPage = () => {
   };
 
   useEffect(() => {
-    // Only fetch on first mount to avoid double requests in Strict Mode
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       fetchWishes();
@@ -60,34 +61,19 @@ export const RSVPPage = () => {
     setError('');
 
     try {
-      const rsvpStatusMap: Record<string, 'confirmed' | 'declined'> = {
-        yes: 'confirmed',
-        no: 'declined',
-      };
-
-      const guestData = {
-        name,
-        phone,
-        rsvpStatus: rsvpStatusMap[attendance],
-        message,
-      };
-
+      const rsvpStatusMap: Record<string, 'confirmed' | 'declined'> = { yes: 'confirmed', no: 'declined' };
+      const guestData = { name, phone, rsvpStatus: rsvpStatusMap[attendance], message };
       const response = await guestService.createGuest(guestData);
 
       if (response.status === 'success') {
         setIsSubmitted(true);
-        // Reset form
-        setName('');
-        setPhone('');
-        setAttendance('');
-        setMessage('');
-        // Refresh wishes to show new guest
+        setName(''); setPhone(''); setAttendance(''); setMessage('');
         await fetchWishes();
       } else {
-        setError(response.message || 'Failed to submit RSVP');
+        setError(response.message || 'Gagal mengirim konfirmasi');
       }
     } catch (err) {
-      setError('Error submitting RSVP. Please try again.');
+      setError('Terjadi kesalahan. Silakan coba lagi.');
       console.error('Submit error:', err);
     } finally {
       setIsLoading(false);
@@ -96,200 +82,191 @@ export const RSVPPage = () => {
 
   if (isSubmitted) {
     return (
-      <div className="w-full h-[852px] bg-gradient-amber flex items-center justify-center p-6">
-        <div className="text-center max-w-sm">
-          <p className="text-5xl mb-6">✓</p>
-          <h3 className="text-xl font-serif text-amber-900 font-light mb-3">Terima Kasih</h3>
-          <p className="text-sm text-amber-700 font-light mb-8 leading-relaxed">
-            Konfirmasi kehadiran Anda telah kami terima. Terima kasih atas dukungannya.
+      <div className="w-full h-full bg-gradient-dark-gold flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-amber-400/10 blur-[100px] animate-pulse-soft"></div>
+        </div>
+        <div className="text-center max-w-sm z-10 animate-scale-in">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full glass-gold flex items-center justify-center animate-glow">
+            <span className="text-2xl">✓</span>
+          </div>
+          <h3 className="text-xl font-serif text-amber-50 font-light mb-3">Terima Kasih!</h3>
+          <p className="text-sm text-amber-100/80 font-light mb-8 leading-relaxed">
+            Konfirmasi kehadiran Anda telah kami terima dengan baik.
           </p>
-          <button 
-            onClick={() => {
-              setIsSubmitted(false);
-              fetchWishes();
-            }}
-            className="w-full py-2 text-xs font-light tracking-widest uppercase text-amber-900 border border-amber-400 hover:border-amber-600 hover:bg-amber-50 transition-all duration-300"
+          <button
+            onClick={() => { setIsSubmitted(false); fetchWishes(); }}
+            className="group relative w-full py-3 overflow-hidden rounded-xl"
           >
-            Kirim Lagi
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            <span className="relative z-10 text-sm font-medium tracking-[0.15em] uppercase text-amber-950">Kirim Lagi</span>
           </button>
         </div>
       </div>
     );
   }
-  
+
   return (
-    <div className="w-full h-[852px] bg-gradient-amber flex flex-col relative overflow-hidden">
-      {/* Header */}
-      <div className="text-center pt-6 pb-4 px-6 border-b border-amber-200">
-        <h2 className="text-lg font-serif text-amber-900 font-light mb-1">
-          Konfirmasi Kehadiran
-        </h2>
-        <p className="text-xs text-amber-600 font-light">
-          Kami menantikan kehadiran Anda
-        </p>
+    <div className="w-full h-full bg-gradient-dark-gold flex flex-col relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-amber-400/8 blur-[100px] animate-pulse-soft"></div>
       </div>
-      
+
+      {/* Header */}
+      <div className={`text-center pt-5 pb-3 px-5 border-b border-amber-400/20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}>
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <span className="text-lg">💌</span>
+          <h2 className="text-base font-serif text-amber-50 font-light">Konfirmasi Kehadiran</h2>
+        </div>
+        <p className="text-[10px] text-amber-100/70 font-light">Kami menantikan kehadiran Anda</p>
+      </div>
+
       {/* Form Section */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 scrollbar-hide">
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto">
-          {/* Error Message */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide z-10">
+        <form onSubmit={handleSubmit} className={`space-y-3 max-w-md mx-auto transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {error && (
-            <div className="bg-red-100 border border-red-300 text-red-700 px-3 py-2 rounded-lg text-xs font-light">
+            <div className="glass-dark border border-rose-400/50 text-rose-300 px-3 py-2 rounded-xl text-xs font-light animate-scale-in">
               {error}
             </div>
           )}
 
-          {/* Name Input */}
+          {/* Name */}
           <div>
-            <label className="block text-xs text-amber-700 font-light mb-2 tracking-widest uppercase">
-              Nama Lengkap
-            </label>
+            <label className="block text-[10px] text-amber-400 font-light mb-1.5 tracking-[0.15em] uppercase">Nama Lengkap *</label>
             <input
               type="text"
               placeholder="Masukkan nama Anda"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 bg-white/60 border border-amber-200 rounded-lg text-sm text-amber-900 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 font-light transition-all"
+              className="w-full px-3 py-2.5 bg-white/10 border border-amber-400/30 rounded-xl text-sm text-amber-50 placeholder-amber-100/40 focus:outline-none focus:border-amber-400/60 focus:bg-white/15 font-light transition-all"
               required
             />
           </div>
 
-          {/* Phone Input */}
+          {/* Phone */}
           <div>
-            <label className="block text-xs text-amber-700 font-light mb-2 tracking-widest uppercase">
-              Nomor Telepon (Opsional)
-            </label>
+            <label className="block text-[10px] text-amber-400 font-light mb-1.5 tracking-[0.15em] uppercase">Nomor Telepon</label>
             <input
               type="tel"
-              placeholder="Masukkan nomor telepon Anda"
+              placeholder="Opsional"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-2 bg-white/60 border border-amber-200 rounded-lg text-sm text-amber-900 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 font-light transition-all"
+              className="w-full px-3 py-2.5 bg-white/10 border border-amber-400/30 rounded-xl text-sm text-amber-50 placeholder-amber-100/40 focus:outline-none focus:border-amber-400/60 focus:bg-white/15 font-light transition-all"
             />
           </div>
-          
-          {/* Attendance Selection */}
+
+          {/* Attendance */}
           <div>
-            <label className="block text-xs text-amber-700 font-light mb-2 tracking-widest uppercase">
-              Konfirmasi
-            </label>
-            <div className="grid grid-cols-2 gap-3">
+            <label className="block text-[10px] text-amber-400 font-light mb-1.5 tracking-[0.15em] uppercase">Konfirmasi *</label>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setAttendance('yes')}
-                className={`py-2.5 px-3 rounded-lg text-sm font-light transition-all ${
-                  attendance === 'yes' 
-                    ? 'bg-green-500 text-white border border-green-600' 
-                    : 'bg-white/60 text-amber-700 border border-amber-200 hover:bg-green-50'
-                }`}
+                className={`py-2.5 px-3 rounded-xl text-sm font-light transition-all duration-300 ${attendance === 'yes'
+                    ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400/60'
+                    : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-emerald-400/50'
+                  }`}
               >
-                Hadir
+                ✓ Hadir
               </button>
               <button
                 type="button"
                 onClick={() => setAttendance('no')}
-                className={`py-2.5 px-3 rounded-lg text-sm font-light transition-all ${
-                  attendance === 'no' 
-                    ? 'bg-red-500 text-white border border-red-600' 
-                    : 'bg-white/60 text-amber-700 border border-amber-200 hover:bg-red-50'
-                }`}
+                className={`py-2.5 px-3 rounded-xl text-sm font-light transition-all duration-300 ${attendance === 'no'
+                    ? 'bg-rose-500/30 text-rose-300 border-2 border-rose-400/60'
+                    : 'bg-white/10 text-amber-100/80 border border-amber-400/30 hover:border-rose-400/50'
+                  }`}
               >
-                Tidak Bisa
+                ✗ Tidak Bisa
               </button>
             </div>
           </div>
-          
+
           {/* Message */}
           <div>
-            <label className="block text-xs text-amber-700 font-light mb-2 tracking-widest uppercase">
-              Ucapan & Doa (Opsional)
-            </label>
+            <label className="block text-[10px] text-amber-400 font-light mb-1.5 tracking-[0.15em] uppercase">Ucapan & Doa</label>
             <textarea
-              placeholder="Tulis ucapan untuk kedua mempelai..."
+              placeholder="Tulis ucapan untuk mempelai... (opsional)"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2 bg-white/60 border border-amber-200 rounded-lg text-sm text-amber-900 placeholder-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 font-light resize-none transition-all"
+              rows={2}
+              className="w-full px-3 py-2.5 bg-white/10 border border-amber-400/30 rounded-xl text-sm text-amber-50 placeholder-amber-100/40 focus:outline-none focus:border-amber-400/60 focus:bg-white/15 font-light resize-none transition-all"
             />
           </div>
-          
-          {/* Submit Button */}
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={!name || !attendance || isLoading}
-            className="w-full py-2.5 bg-amber-600 text-white rounded-lg text-sm font-light hover:bg-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full py-3 overflow-hidden rounded-xl disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Mengirim...' : 'Kirim Konfirmasi'}
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            <span className="relative z-10 text-sm font-medium tracking-[0.15em] uppercase text-amber-950">
+              {isLoading ? 'Mengirim...' : 'Kirim Konfirmasi'}
+            </span>
           </button>
         </form>
-        
+
         {/* Wishes Section */}
-        <div className="mt-6 max-w-sm mx-auto">
-          <p className="text-xs text-amber-700 font-light tracking-widest uppercase mb-3">
-            Ucapan Tamu ({wishes.length})
-          </p>
+        <div className={`mt-6 max-w-md mx-auto transition-all duration-700 delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-6 bg-gradient-to-r from-transparent to-amber-400/40"></div>
+            <p className="text-[10px] text-amber-400 font-light tracking-[0.15em] uppercase">Ucapan ({wishes.length})</p>
+            <div className="h-px w-6 bg-gradient-to-l from-transparent to-amber-400/40"></div>
+          </div>
+
           <div className="space-y-2">
             {wishes.length > 0 ? (
               <>
                 {wishes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item, i) => (
-                  <div key={i} className="bg-white/50 rounded-lg p-3">
-                    <p className="text-xs font-light text-amber-900 mb-1">{item.name}</p>
-                    <p className="text-xs text-amber-700 font-light mb-2 leading-relaxed">{item.message}</p>
-                    <div className="flex justify-between items-center">
-                      <span className={`text-[10px] font-light px-2 py-1 rounded-md ${
-                        item.rsvpStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
-                        item.rsvpStatus === 'declined' ? 'bg-red-100 text-red-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
-                        {item.rsvpStatus === 'confirmed' ? 'Hadir' :
-                         item.rsvpStatus === 'declined' ? 'Tidak' :
-                         'Pending'}
+                  <div key={i} className="glass-dark-subtle rounded-xl p-3 transition-all duration-300 hover:bg-white/10">
+                    <div className="flex items-start justify-between mb-1">
+                      <p className="text-xs font-medium text-amber-50">{item.name}</p>
+                      <span className={`text-[9px] font-light px-2 py-0.5 rounded-full ${item.rsvpStatus === 'confirmed' ? 'bg-emerald-500/25 text-emerald-300' :
+                          item.rsvpStatus === 'declined' ? 'bg-rose-500/25 text-rose-300' : 'bg-amber-500/25 text-amber-300'
+                        }`}>
+                        {item.rsvpStatus === 'confirmed' ? '✓ Hadir' : item.rsvpStatus === 'declined' ? '✗ Tidak' : 'Pending'}
                       </span>
-                      <p className="text-[10px] text-amber-500 font-light">{formatDate(item.respondedAt)}</p>
                     </div>
+                    <p className="text-xs text-amber-100/70 font-light leading-relaxed mb-1">{item.message}</p>
+                    <p className="text-[9px] text-amber-100/40 font-light">{formatDate(item.respondedAt)}</p>
                   </div>
                 ))}
-                
+
                 {/* Pagination */}
                 {Math.ceil(wishes.length / itemsPerPage) > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-3 pt-3 border-t border-amber-200">
+                  <div className="flex items-center justify-center gap-1.5 mt-4 pt-3 border-t border-amber-400/15">
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="px-2 py-1 text-[10px] font-light bg-white text-amber-700 rounded border border-amber-200 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      ← 
-                    </button>
-                    
-                    <div className="flex gap-0.5">
+                      className="px-2 py-1.5 text-xs font-light glass-dark-subtle text-amber-400 rounded-lg hover:bg-amber-400/15 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >←</button>
+
+                    <div className="flex gap-1">
                       {Array.from({ length: Math.ceil(wishes.length / itemsPerPage) }).map((_, i) => (
                         <button
                           key={i + 1}
                           onClick={() => setCurrentPage(i + 1)}
-                          className={`w-6 h-6 text-[10px] font-light rounded transition-colors ${
-                            currentPage === i + 1
-                              ? 'bg-amber-500 text-white'
-                              : 'bg-white text-amber-700 border border-amber-200 hover:bg-amber-50'
-                          }`}
-                        >
-                          {i + 1}
-                        </button>
+                          className={`w-6 h-6 text-xs font-light rounded-lg transition-all ${currentPage === i + 1 ? 'bg-amber-400 text-amber-950' : 'glass-dark-subtle text-amber-400 hover:bg-amber-400/15'
+                            }`}
+                        >{i + 1}</button>
                       ))}
                     </div>
-                    
+
                     <button
                       onClick={() => setCurrentPage(p => Math.min(Math.ceil(wishes.length / itemsPerPage), p + 1))}
                       disabled={currentPage === Math.ceil(wishes.length / itemsPerPage)}
-                      className="px-2 py-1 text-[10px] font-light bg-white text-amber-700 rounded border border-amber-200 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      →
-                    </button>
+                      className="px-2 py-1.5 text-xs font-light glass-dark-subtle text-amber-400 rounded-lg hover:bg-amber-400/15 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >→</button>
                   </div>
                 )}
               </>
             ) : (
-              <div className="bg-white/50 rounded-lg p-3 text-center">
-                <p className="text-xs text-amber-600 font-light">Jadilah yang pertama memberikan ucapan!</p>
+              <div className="glass-dark-subtle rounded-xl p-4 text-center">
+                <p className="text-xs text-amber-100/60 font-light">Jadilah yang pertama memberikan ucapan! 💝</p>
               </div>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AudioPlayer } from './components/AudioPlayer'
 import { BottomNav } from './components/BottomNav'
@@ -13,72 +13,51 @@ import { ThanksPage } from './components/pages/ThanksPage'
 import { AdminPage } from './components/pages/AdminPage'
 import { NotFoundPage } from './components/pages/NotFoundPage'
 
-const CANVAS_WIDTH = 430
-const CANVAS_HEIGHT = 932
-
-const PAGE_BG_COLORS = [
-  '#fdf2f8', '#fffbeb', '#f0fdfa', '#eef2ff',
-  '#fff1f2', '#ecfeff', '#fffbeb', '#fff1f2',
-]
+const DESKTOP_BREAKPOINT = 1024
+const PHONE_WIDTH = 430
+const PHONE_HEIGHT = 932
 
 function MainApp() {
-  const [isPlaying, setIsPlaying] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
-  const [visiblePage, setVisiblePage] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [scale, setScale] = useState(1)
   const [isOpened, setIsOpened] = useState(false)
-  const [renderWidth, setRenderWidth] = useState(CANVAS_WIDTH)
-  const [hideSideBg, setHideSideBg] = useState(false)
-
-  const [overlayVisible, setOverlayVisible] = useState(false)
-  const [overlayOpaque, setOverlayOpaque] = useState(false)
-  const [pendingPage, setPendingPage] = useState<number | null>(null)
-
-  const overlayRef = useRef<HTMLDivElement | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const overlayFallback = useRef<number | null>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [phoneScale, setPhoneScale] = useState(1)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
-    const updateScale = () => {
-      const thresholdW = CANVAS_WIDTH + 40
-      const thresholdH = CANVAS_HEIGHT + 40
-      const shouldHide = window.innerWidth <= thresholdW || window.innerHeight <= thresholdH
-      setHideSideBg(shouldHide)
+    const updateLayout = () => {
+      const isDesktopView = window.innerWidth >= DESKTOP_BREAKPOINT
+      setIsDesktop(isDesktopView)
 
-      const extraMobileWidth = 30
-      const newRenderWidth = shouldHide ? CANVAS_WIDTH + extraMobileWidth : CANVAS_WIDTH
-      setRenderWidth(newRenderWidth)
-
-      const scaleX = window.innerWidth / newRenderWidth
-      const scaleY = window.innerHeight / CANVAS_HEIGHT
-      const s = Math.min(scaleX, scaleY)
-      setScale(s)
-
-      if (shouldHide) {
-        document.documentElement.classList.add('no-side-bg')
-      } else {
-        document.documentElement.classList.remove('no-side-bg')
-        document.body.style.background = `var(--page-bg-color)`
+      if (isDesktopView) {
+        const maxHeight = window.innerHeight - 100
+        const s = Math.min(0.85, maxHeight / PHONE_HEIGHT)
+        setPhoneScale(s)
       }
     }
 
-    updateScale()
-    window.addEventListener('resize', updateScale)
-    return () => window.removeEventListener('resize', updateScale)
+    updateLayout()
+    window.addEventListener('resize', updateLayout)
+    return () => window.removeEventListener('resize', updateLayout)
   }, [])
 
-  useEffect(() => {
-    if (hideSideBg) return
-    document.body.style.background = `var(--page-bg-color)`
-  }, [visiblePage, hideSideBg])
+  const handleNavigate = useCallback((pageIndex: number) => {
+    if (pageIndex === currentPage) return
 
-  useEffect(() => {
-    document.documentElement.style.setProperty('--page-bg-color', PAGE_BG_COLORS[visiblePage])
-  }, [visiblePage])
+    if (pageIndex !== 0 && !isOpened) {
+      setIsOpened(true)
+    }
+
+    setCurrentPage(pageIndex)
+  }, [currentPage, isOpened])
+
+  const handleOpen = useCallback(() => {
+    setIsOpened(true)
+    setCurrentPage(1)
+  }, [])
 
   const pages = [
-    <OpeningPage key="opening" onOpen={() => handleNavigate(1)} />,
+    <OpeningPage key="opening" onOpen={handleOpen} />,
     <QuotesPage key="quotes" />,
     <CouplePage key="couple" />,
     <GalleryPage key="gallery" />,
@@ -88,111 +67,129 @@ function MainApp() {
     <ThanksPage key="thanks" />,
   ]
 
-  const clearOverlayFallback = () => {
-    if (overlayFallback.current) {
-      window.clearTimeout(overlayFallback.current)
-      overlayFallback.current = null
-    }
+  // Mobile/Tablet View - Full Screen Edge to Edge
+  if (!isDesktop) {
+    return (
+      <div className="fixed inset-0 flex flex-col bg-[#1f1b18]">
+        {/* Audio Player - only shown when opened */}
+        {isOpened && (
+          <AudioPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+        )}
+
+        {/* Main content - fills remaining space */}
+        <div className="flex-1 relative overflow-hidden">
+          {pages[currentPage]}
+        </div>
+
+        {/* Bottom Navigation - only shown when opened */}
+        {isOpened && (
+          <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
+        )}
+      </div>
+    )
   }
 
-  const handleNavigate = (pageIndex: number) => {
-    if (isAnimating || pageIndex === visiblePage) return
-
-    if (pageIndex !== 0 && !isOpened) {
-      setIsOpened(true)
-    }
-
-    setCurrentPage(pageIndex)
-    document.documentElement.style.setProperty('--page-bg-color', PAGE_BG_COLORS[pageIndex])
-
-    setPendingPage(pageIndex)
-    setOverlayVisible(true)
-    requestAnimationFrame(() => setOverlayOpaque(true))
-    setIsAnimating(true)
-  }
-
-  useEffect(() => {
-    const node = overlayRef.current
-    if (!node) return
-
-    const onOverlayTransition = (e: TransitionEvent) => {
-      if (e.propertyName !== 'opacity') return
-
-      if (overlayOpaque) {
-        if (pendingPage !== null) {
-          setVisiblePage(pendingPage)
-        }
-        requestAnimationFrame(() => setOverlayOpaque(false))
-      } else {
-        setOverlayVisible(false)
-        setPendingPage(null)
-        setIsAnimating(false)
-        clearOverlayFallback()
-
-        if (containerRef.current) {
-          const scrollContainer = containerRef.current.querySelector('.overflow-y-auto')
-          if (scrollContainer) (scrollContainer as HTMLElement).scrollTop = 0
-        }
-      }
-    }
-
-    node.addEventListener('transitionend', onOverlayTransition as any)
-
-    overlayFallback.current = window.setTimeout(() => {
-      if (overlayOpaque) {
-        if (pendingPage !== null) setVisiblePage(pendingPage)
-        requestAnimationFrame(() => setOverlayOpaque(false))
-      } else {
-        setOverlayVisible(false)
-        setPendingPage(null)
-        setIsAnimating(false)
-      }
-      clearOverlayFallback()
-    }, 800)
-
-    return () => {
-      node.removeEventListener('transitionend', onOverlayTransition as any)
-      clearOverlayFallback()
-    }
-  }, [overlayOpaque, pendingPage])
-
+  // Desktop View - Phone Mockup
   return (
-    <div
-      className="canvas-wrapper"
-      style={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div
-        ref={containerRef}
-        className="app-container"
-        style={{
-          width: `${renderWidth}px`,
-          transform: `scale(${scale})`,
-          transformOrigin: 'center center',
-        }}
-      >
-        <AudioPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} isOpened={isOpened} />
+    <div className="min-h-screen bg-[#0f0e0d] flex items-center justify-center p-8">
+      {/* Background decoration */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-amber-500/5 blur-[150px]"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-rose-500/5 blur-[120px]"></div>
+      </div>
 
-        <div className="w-full h-[932px] relative overflow-hidden flex flex-col">
-          <div className="flex-1 relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              {pages[visiblePage]}
-            </div>
+      <div className="flex items-center gap-16 z-10">
+        {/* Left Panel */}
+        <div className="hidden lg:block w-80 text-center">
+          <div className="mb-8">
+            <p className="text-amber-400/70 text-sm tracking-[0.3em] uppercase mb-4">Wedding Invitation</p>
+            <h1 className="text-5xl font-serif text-amber-50 font-light mb-2">Selpia</h1>
+            <span className="text-3xl font-serif text-amber-400">&</span>
+            <h1 className="text-5xl font-serif text-amber-50 font-light mt-2">Ernest</h1>
+          </div>
+          <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mb-8"></div>
+          <p className="text-amber-100/60 text-base font-light mb-2">Sabtu, 14 Februari 2026</p>
+          <p className="text-amber-100/40 text-sm font-light">Millennium Centennial Center</p>
+          <p className="text-amber-100/40 text-sm font-light">Jakarta Selatan</p>
+        </div>
 
-            {overlayVisible && (
+        {/* Phone Mockup */}
+        <div className="relative">
+          <div
+            className="relative rounded-[50px] p-3 bg-gradient-to-b from-gray-700 to-gray-900"
+            style={{
+              boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5), 0 0 60px rgba(232,200,114,0.08), inset 0 1px 1px rgba(255,255,255,0.1)'
+            }}
+          >
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-gray-900 rounded-b-2xl z-20"></div>
+
+            <div
+              className="overflow-hidden"
+              style={{
+                width: `${PHONE_WIDTH * phoneScale}px`,
+                height: `${PHONE_HEIGHT * phoneScale}px`,
+                borderRadius: '38px',
+              }}
+            >
               <div
-                ref={overlayRef}
-                className={`absolute inset-0 z-40 pointer-events-none bg-[var(--page-bg-color)] transition-opacity duration-350 ease-out ${overlayOpaque ? 'opacity-100' : 'opacity-0'}`}
-              />
-            )}
+                className="flex flex-col bg-[#1f1b18]"
+                style={{
+                  width: `${PHONE_WIDTH}px`,
+                  height: `${PHONE_HEIGHT}px`,
+                  transform: `scale(${phoneScale})`,
+                  transformOrigin: 'top left'
+                }}
+              >
+                {isOpened && (
+                  <AudioPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+                )}
+
+                <div className="flex-1 relative overflow-hidden">
+                  {pages[currentPage]}
+                </div>
+
+                {isOpened && (
+                  <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="w-full h-[80px]">
-            <BottomNav currentPage={currentPage} onNavigate={handleNavigate} isOpened={isOpened} />
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-gradient-to-t from-amber-400/5 to-transparent blur-xl rounded-full"></div>
+        </div>
+
+        {/* Right Panel */}
+        <div className="hidden xl:block w-72">
+          <div className="glass-dark rounded-2xl p-6 mb-6">
+            <h3 className="text-amber-400 text-xs tracking-[0.2em] uppercase mb-4">Acara</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-amber-50 font-serif mb-1">Akad Nikah</p>
+                <p className="text-amber-100/60 text-sm">08:00 - 10:00 WIB</p>
+              </div>
+              <div>
+                <p className="text-amber-50 font-serif mb-1">Resepsi</p>
+                <p className="text-amber-100/60 text-sm">11:00 - 14:00 WIB</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass-dark rounded-2xl p-6">
+            <h3 className="text-amber-400 text-xs tracking-[0.2em] uppercase mb-4">Navigasi</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {['🏠', '💬', '💑', '📷', '📅', '📍', '✉️', '🙏'].map((icon, i) => (
+                <button
+                  key={i}
+                  onClick={() => { if (i > 0 || isOpened) handleNavigate(i) }}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${currentPage === i
+                    ? 'bg-amber-400/20 ring-1 ring-amber-400/50'
+                    : 'bg-white/5 hover:bg-white/10'
+                    }`}
+                >
+                  <span className={currentPage === i ? '' : 'grayscale opacity-50'}>{icon}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

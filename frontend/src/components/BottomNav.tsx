@@ -3,13 +3,12 @@ import React, { useRef, useEffect, useState } from 'react';
 interface BottomNavProps {
   currentPage: number;
   onNavigate: (page: number) => void;
-  isOpened: boolean;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate, isOpened }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
   const navItems = [
-    { label: 'Opening', icon: '🏠' },
-    { label: 'Quotes', icon: '💬' },
+    { label: 'Home', icon: '🏠' },
+    { label: 'Quote', icon: '💬' },
     { label: 'Couple', icon: '💑' },
     { label: 'Gallery', icon: '📷' },
     { label: 'Event', icon: '📅' },
@@ -21,14 +20,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate, i
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [itemWidth, setItemWidth] = useState(80);
 
-  // compute item width so that up to 5 items fit the visible width
   useEffect(() => {
     const compute = () => {
       if (!containerRef.current) return;
-      const container = containerRef.current;
-      const visibleWidth = container.offsetWidth || 430;
+      const visibleWidth = containerRef.current.offsetWidth || 430;
       const w = Math.floor(visibleWidth / 5);
-      setItemWidth(w);
+      setItemWidth(Math.max(w, 70));
     };
 
     compute();
@@ -36,7 +33,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate, i
     return () => window.removeEventListener('resize', compute);
   }, []);
 
-  // scroll to active item so it's centered in the viewport
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -48,42 +44,42 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate, i
   }, [currentPage, itemWidth]);
 
   return (
-    <div className={`w-full h-full transition-opacity duration-300 ${isOpened ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className="relative h-full bg-white border-t border-gray-200">
-        <div
-          ref={containerRef}
-          className="flex items-center h-full overflow-x-auto scrollbar-hide px-1"
-          style={{ scrollSnapType: 'x mandatory' }}
-        >
-          {navItems.map((item, index) => {
-            const isActive = currentPage === index;
-            return (
-              <button
-                key={index}
-                onClick={() => onNavigate(index)}
-                className={`flex flex-col items-center justify-center gap-1 flex-shrink-0 py-2 rounded-xl mx-0.5 transition-all duration-300 ${
-                  isActive ? 'bg-rose-50' : 'hover:bg-gray-50'
+    <div className="w-full flex-shrink-0 glass-dark border-t border-amber-400/15">
+      <div
+        ref={containerRef}
+        className="flex items-center overflow-x-auto scrollbar-hide"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {navItems.map((item, index) => {
+          const isActive = currentPage === index;
+
+          return (
+            <button
+              key={index}
+              onClick={() => onNavigate(index)}
+              className={`flex flex-col items-center justify-center gap-1 flex-shrink-0 py-3 transition-colors ${isActive ? 'bg-amber-400/15' : 'active:bg-white/10'
                 }`}
-                style={{ scrollSnapAlign: 'center', width: `${itemWidth}px` }}
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isActive ? 'bg-rose-100' : 'bg-transparent'
+              style={{
+                scrollSnapAlign: 'center',
+                width: `${itemWidth}px`,
+                paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+              }}
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${isActive ? 'bg-amber-400/25' : 'bg-transparent'
                   }`}
-                >
-                  <span className={`text-xl transition-all duration-300 ${isActive ? '' : 'grayscale opacity-40'}`}>
-                    {item.icon}
-                  </span>
-                </div>
-                <span className={`text-[10px] font-medium transition-all duration-300 ${
-                  isActive ? 'text-rose-600' : 'text-gray-400'
-                }`}>
-                  {item.label}
+              >
+                <span className={`text-lg ${isActive ? '' : 'grayscale opacity-50'}`}>
+                  {item.icon}
                 </span>
-              </button>
-            );
-          })}
-        </div>
+              </div>
+              <span className={`text-[10px] font-medium ${isActive ? 'text-amber-400' : 'text-amber-100/40'
+                }`}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

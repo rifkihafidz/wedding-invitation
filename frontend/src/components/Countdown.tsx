@@ -4,7 +4,6 @@ interface CountdownProps {
   targetDate: Date;
 }
 
-// Calculate initial time immediately
 const calculateTimeLeft = (targetDate: Date) => {
   const now = new Date().getTime();
   const distance = targetDate.getTime() - now;
@@ -21,7 +20,6 @@ const calculateTimeLeft = (targetDate: Date) => {
 };
 
 export const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
-  // Initialize with calculated value immediately (no delay)
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
 
   useEffect(() => {
@@ -40,12 +38,16 @@ export const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
   ];
 
   return (
-    <div className="flex gap-2 justify-center">
-      {timeUnits.map((unit) => (
-        <div key={unit.label} className="text-center">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-3 py-2 min-w-[60px] shadow-sm border border-rose-100">
-            <div className="text-2xl font-bold text-rose-600 tabular-nums">{unit.value}</div>
-            <div className="text-[9px] text-rose-400 font-medium uppercase tracking-wide">{unit.label}</div>
+    <div className="flex gap-3 justify-center">
+      {timeUnits.map((unit, index) => (
+        <div key={unit.label} className="text-center" style={{ animationDelay: `${index * 100}ms` }}>
+          <div className="glass-gold rounded-2xl px-4 py-4 min-w-[70px] shadow-gold">
+            <div className="text-3xl font-light text-amber-400 tabular-nums tracking-wide animate-glow-text">
+              {unit.value.toString().padStart(2, '0')}
+            </div>
+            <div className="text-[10px] text-amber-100/70 font-light uppercase tracking-widest mt-1.5">
+              {unit.label}
+            </div>
           </div>
         </div>
       ))}
